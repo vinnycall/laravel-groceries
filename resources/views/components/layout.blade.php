@@ -9,6 +9,7 @@
 <body>
     <nav>
         <a href="/">Home</a>
+        <a href="/items">items</a>
     </nav>
     
     {{ $slot }}

@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -11,7 +14,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::all();
+        $items = Item::with("category")->get();
         return view("items.index", compact("items"));
     }
 
@@ -20,26 +23,36 @@ class ItemController extends Controller
      */
     public function create()
     {
-        return view('items.create');
+        $categories = Category::all();
+        return view('items.create', compact('categories'));
+    }
+     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Item $item)
+    {
+        $categories = Category::all();
+        return view("items.edit", compact("item", "categories"));
     }
     
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {
-        $item = Item::find($id);
-        if ($item) {
-            $item->delete();
-        }
+    public function destroy(Item $item) {
+        $item->delete();
         return redirect()->route('items.index');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreItemRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        Item::create($validated);
+
+        return redirect()->route('items.index');
     }
 
     /**
@@ -50,20 +63,18 @@ class ItemController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+   
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateItemRequest $request, Item $item)
     {
-        //
+        $validated = $request->validated();
+
+        $item ->update($validated);
+
+        return redirect()->route("items.index");
     }
 
     
